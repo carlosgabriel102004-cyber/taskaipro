@@ -31,11 +31,8 @@ export function isPast(dateStr: string): boolean {
 
 export function formatDate(dateStr: string): string {
   if (!dateStr) return "Sem data";
-  const parts = dateStr.split('T')[0].split('-');
-  const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-  
-  const today = getLocalDateString();
   const taskDate = dateStr.split('T')[0];
+  const today = getLocalDateString();
   
   if (taskDate === today) return "Hoje";
   
@@ -43,6 +40,12 @@ export function formatDate(dateStr: string): string {
   tomorrowDate.setDate(tomorrowDate.getDate() + 1);
   if (taskDate === getLocalDateString(tomorrowDate)) return "Amanhã";
 
+  const yesterdayDate = new Date();
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  if (taskDate === getLocalDateString(yesterdayDate)) return "Ontem";
+
+  const parts = taskDate.split('-');
+  const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
   return d.toLocaleDateString('pt-BR', { 
     day: '2-digit', 
     month: 'short' 
