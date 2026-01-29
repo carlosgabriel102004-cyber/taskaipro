@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskPro AI | Premium Task Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10.656V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12.344'/><path d='m9 11 3 3L22 4'/></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233F51B5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10.656V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12.344'/><path d='m9 11 3 3L22 4'/></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,56 +21,27 @@
                     },
                     colors: {
                         indigo: {
-                            50: '#f5f7ff',
-                            100: '#ebf0fe',
-                            200: '#ced9fd',
-                            300: '#a1b7fa',
-                            400: '#6d8ef5',
-                            500: '#4767ed',
-                            600: '#3347dd',
-                            700: '#2836c0',
-                            800: '#252e9c',
-                            900: '#232b7d',
-                            950: '#15184a',
+                            50: '#EEF2FF',
+                            100: '#E0E7FF',
+                            600: '#3F51B5', // Cor primária TaskPro
+                            700: '#303F9F',
                         },
+                        slate: {
+                            50: '#F8F9FD', // Fundo Principal
+                            400: '#94A3B8',
+                            800: '#2A2A5E', // Texto de Logo/Títulos
+                        }
                     },
                 },
             },
         }
     </script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fafbfc; margin: 0; padding: 0; overflow: hidden; }
-        #root:empty::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            z-index: 100;
-        }
-        #root:empty::after {
-            content: "Iniciando TaskPro AI...";
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #6366f1;
-            font-weight: 800;
-            font-size: 1.1rem;
-            z-index: 101;
-            letter-spacing: -0.025em;
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: .5; transform: translate(-50%, -50%) scale(0.98); }
-        }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8F9FD; margin: 0; padding: 0; overflow: hidden; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        #root { height: 100vh; }
     </style>
 <script type="importmap">
 {
