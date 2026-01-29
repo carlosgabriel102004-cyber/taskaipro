@@ -21,8 +21,8 @@
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                     </div>
                     <h2 style="font-weight: 800; font-size: 24px; margin-bottom: 8px;">Erro ao Inicializar</h2>
-                    <p style="color: #64748b; max-width: 400px; margin-bottom: 24px;">Houve um problema ao carregar os módulos do TaskPro AI. Isso pode ocorrer devido a restrições de rede ou problemas no servidor de arquivos.</p>
-                    <pre style="background: #f8fafc; padding: 16px; border-radius: 12px; font-size: 12px; overflow: auto; max-width: 90vw; text-align: left; border: 1px solid #e2e8f0;">${e.message}\n${e.filename}:${e.lineno}</pre>
+                    <p style="color: #64748b; max-width: 400px; margin-bottom: 24px;">Houve um problema ao carregar o TaskPro AI. Certifique-se de que a conexão está estável.</p>
+                    <pre style="background: #f8fafc; padding: 16px; border-radius: 12px; font-size: 12px; overflow: auto; max-width: 90vw; text-align: left; border: 1px solid #e2e8f0;">${e.message}</pre>
                     <button onclick="location.reload()" style="margin-top: 24px; background: #6366f1; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer;">Tentar Novamente</button>
                 </div>`;
             }
@@ -95,18 +95,7 @@
     "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
     "@google/genai": "https://esm.sh/@google/genai@1.38.0",
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "./App.tsx": "./App.tsx",
-    "./types.ts": "./types.ts",
-    "./constants.tsx": "./constants.tsx",
-    "./services/geminiService.ts": "./services/geminiService.ts",
-    "./utils/dateUtils.ts": "./utils/dateUtils.ts",
-    "./components/Button.tsx": "./components/Button.tsx",
-    "./components/TaskItem.tsx": "./components/TaskItem.tsx",
-    "./components/TaskModal.tsx": "./components/TaskModal.tsx",
-    "./components/LabelManager.tsx": "./components/LabelManager.tsx",
-    "./components/AgendaView.tsx": "./components/AgendaView.tsx",
-    "./components/NotesView.tsx": "./components/NotesView.tsx"
+    "react/": "https://esm.sh/react@^19.2.4/"
   }
 }
 </script>

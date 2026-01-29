@@ -192,7 +192,6 @@ const App: React.FC = () => {
             </div>
           </nav>
 
-          {/* Label Management Entry */}
           <div className="pt-6 border-t border-slate-100/80">
             <button 
               onClick={() => setIsLabelManagerOpen(true)}
@@ -218,7 +217,7 @@ const App: React.FC = () => {
             
             <div className="hidden xl:block">
               <h2 className="text-3xl font-black text-slate-950 tracking-tighter animate-in slide-in-from-left-4 duration-500">
-                {viewType === 'notes' ? 'Notas & Ideias' : (activeRange === 'today' ? 'Hoje' : activeRange === 'tomorrow' ? 'Amanhã' : activeRange === 'past' ? 'Passado' : 'Próximos')}
+                {viewType === 'notes' ? 'Notas & Ideias' : (activeRange === 'today' ? 'Hoje' : activeRange === 'tomorrow' ? 'Amanhã' : activeRange === 'past' ? 'Dias Passados' : 'Próximos')}
               </h2>
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">
                 {filteredTasks.length} {filteredTasks.length === 1 ? 'item ativo' : 'itens ativos'}
