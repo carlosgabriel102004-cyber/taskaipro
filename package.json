@@ -1,0 +1,33 @@
+{
+  "name": "taskpro-ai---teste3",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "@google/genai": "1.38.0",
+    "./App.tsx": "latest",
+    "./types.ts": "latest",
+    "./constants.tsx": "latest",
+    "./services/geminiService.ts": "latest",
+    "./utils/dateUtils.ts": "latest",
+    "./components/Button.tsx": "latest",
+    "./components/TaskItem.tsx": "latest",
+    "./components/TaskModal.tsx": "latest",
+    "./components/LabelManager.tsx": "latest",
+    "./components/AgendaView.tsx": "latest",
+    "./components/NotesView.tsx": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}
