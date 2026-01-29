@@ -8,7 +8,6 @@ import AgendaView from './components/AgendaView.tsx';
 import NotesView from './components/NotesView.tsx';
 import TaskModal from './components/TaskModal.tsx';
 import LabelManager from './components/LabelManager.tsx';
-import Button from './components/Button.tsx';
 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>(() => {
@@ -73,7 +72,6 @@ const App: React.FC = () => {
         default: return true;
       }
     }).sort((a, b) => {
-      // Prioritize non-completed tasks
       if (a.completed !== b.completed) return a.completed ? 1 : -1;
       return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
     });
@@ -105,7 +103,7 @@ const App: React.FC = () => {
 
   const toggleTask = (id: string) => updateTask(id, { completed: !tasks.find(t => t.id === id)?.completed });
   const deleteTask = (id: string) => {
-    if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
+    if (confirm('Deseja realmente remover esta tarefa?')) {
       setTasks(prev => prev.filter(t => t.id !== id));
     }
   };
@@ -119,40 +117,40 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-[#fafbfc] overflow-hidden font-sans text-slate-900">
+    <div className="flex h-screen bg-[#fafbfc] overflow-hidden font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
       {/* Mobile Overlay */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm md:hidden transition-all duration-300" onClick={() => setMobileMenuOpen(false)} />
+        <div className="fixed inset-0 z-40 bg-slate-950/20 backdrop-blur-md md:hidden transition-all duration-300" onClick={() => setMobileMenuOpen(false)} />
       )}
 
-      {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-[300px] bg-white border-r border-slate-200/60 transform transition-all duration-300 ease-in-out md:relative md:translate-x-0 ${mobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
-        <div className="p-6 h-full flex flex-col">
-          {/* Logo */}
-          <div className="flex items-center gap-3 px-2 mb-10">
-            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200 ring-4 ring-indigo-50">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+      {/* Sidebar Premium */}
+      <aside className={`fixed inset-y-0 left-0 z-50 w-[290px] bg-white border-r border-slate-200/50 transform transition-all duration-500 ease-out md:relative md:translate-x-0 ${mobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+        <div className="p-7 h-full flex flex-col">
+          {/* Brand Logo */}
+          <div className="flex items-center gap-4 px-2 mb-12">
+            <div className="w-11 h-11 bg-indigo-600 rounded-[18px] flex items-center justify-center shadow-2xl shadow-indigo-200 ring-4 ring-indigo-50 transform -rotate-3 transition-transform hover:rotate-0">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3.5} d="M5 13l4 4L19 7" />
               </svg>
             </div>
             <div>
-              <h1 className="text-lg font-extrabold text-slate-800 leading-tight tracking-tight">TaskPro <span className="text-indigo-600">AI</span></h1>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Organização Elite</p>
+              <h1 className="text-xl font-extrabold text-slate-950 leading-none tracking-tighter">TaskPro <span className="text-indigo-600">AI</span></h1>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">Organização Elite</p>
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="space-y-1 flex-grow overflow-y-auto custom-scrollbar pr-2">
-            <div className="mb-8">
-              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 px-4 flex items-center justify-between">
+          {/* Nav Categories */}
+          <nav className="space-y-1.5 flex-grow overflow-y-auto custom-scrollbar pr-1">
+            <div className="mb-10">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-5 px-4 flex items-center justify-between opacity-70">
                 <span>Cronograma</span>
-                <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></span>
+                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
               </h3>
               
               <SidebarItem 
                 active={activeRange === 'past'} 
                 onClick={() => { setActiveRange('past'); setViewType('list'); setMobileMenuOpen(false); }} 
-                icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8v4l3 3" /><circle cx="12" cy="12" r="9" /></svg>}
+                icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8v4l3 3" /><circle cx="12" cy="12" r="9" /></svg>}
                 label="Dias Passados" 
                 count={stats.past}
                 variant="danger"
@@ -161,15 +159,15 @@ const App: React.FC = () => {
               <SidebarItem 
                 active={activeRange === 'today'} 
                 onClick={() => { setActiveRange('today'); setViewType('list'); setMobileMenuOpen(false); }} 
-                icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /><path d="M8 14h.01" /><path d="M12 14h.01" /><path d="M16 14h.01" /></svg>}
-                label="Hoje" 
+                icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /><path d="M8 14h.01" /><path d="M12 14h.01" /><path d="M16 14h.01" /></svg>}
+                label="Foco de Hoje" 
                 count={stats.today}
               />
               
               <SidebarItem 
                 active={activeRange === 'tomorrow'} 
                 onClick={() => { setActiveRange('tomorrow'); setViewType('list'); setMobileMenuOpen(false); }} 
-                icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10h18" /><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /></svg>}
+                icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10h18" /><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /></svg>}
                 label="Amanhã" 
                 count={stats.tomorrow}
               />
@@ -177,82 +175,82 @@ const App: React.FC = () => {
               <SidebarItem 
                 active={activeRange === 'upcoming'} 
                 onClick={() => { setActiveRange('upcoming'); setViewType('agenda'); setMobileMenuOpen(false); }} 
-                icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /><path d="m15 14 3 3-3 3" /></svg>}
+                icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /><path d="m15 14 3 3-3 3" /></svg>}
                 label="Próximos Dias" 
                 count={stats.upcoming}
               />
             </div>
 
             <div className="pt-2">
-              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 px-4">Workspace</h3>
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-5 px-4 opacity-70">Workspace</h3>
               <SidebarItem 
                 active={viewType === 'notes'} 
                 onClick={() => { setViewType('notes'); setActiveRange('all'); setMobileMenuOpen(false); }} 
-                icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /></svg>}
-                label="Notas & Detalhes" 
+                icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /></svg>}
+                label="Notas de Texto" 
               />
             </div>
           </nav>
 
-          {/* Footer Sidebar */}
-          <div className="pt-6 border-t border-slate-100">
+          {/* Label Management Entry */}
+          <div className="pt-6 border-t border-slate-100/80">
             <button 
               onClick={() => setIsLabelManagerOpen(true)}
-              className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-indigo-600 transition-all w-full px-4 py-3 rounded-2xl hover:bg-slate-50 group"
+              className="group flex items-center gap-3 w-full px-5 py-4 rounded-2xl hover:bg-slate-50 transition-all duration-300"
             >
-              <div className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+              <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-indigo-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-indigo-100 transition-all duration-300">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
               </div>
-              Gerenciar Etiquetas
+              <span className="text-xs font-black text-slate-500 group-hover:text-slate-900 uppercase tracking-widest">Etiquetas</span>
             </button>
           </div>
         </div>
       </aside>
 
-      {/* Main Content */}
+      {/* Main Experience */}
       <main className="flex-grow flex flex-col min-w-0 h-full relative overflow-hidden">
-        {/* Top Header */}
-        <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-6 md:px-12 py-6 flex items-center justify-between sticky top-0 z-30">
-          <div className="flex items-center gap-6 flex-grow">
-            <button onClick={() => setMobileMenuOpen(true)} className="md:hidden p-2.5 text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
+        {/* Dynamic Header */}
+        <header className="bg-white/80 backdrop-blur-2xl border-b border-slate-200/50 px-8 md:px-14 py-8 flex items-center justify-between sticky top-0 z-40">
+          <div className="flex items-center gap-8 flex-grow">
+            <button onClick={() => setMobileMenuOpen(true)} className="md:hidden p-3 text-slate-600 hover:bg-slate-100 rounded-2xl transition-all active:scale-90">
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
             
-            <div className="hidden lg:block">
-              <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-                {viewType === 'notes' ? 'Minhas Notas' : (activeRange === 'today' ? 'Foco de Hoje' : activeRange === 'tomorrow' ? 'Agenda de Amanhã' : activeRange === 'past' ? 'Histórico Pendente' : 'Próximos Dias')}
+            <div className="hidden xl:block">
+              <h2 className="text-3xl font-black text-slate-950 tracking-tighter animate-in slide-in-from-left-4 duration-500">
+                {viewType === 'notes' ? 'Notas & Ideias' : (activeRange === 'today' ? 'Hoje' : activeRange === 'tomorrow' ? 'Amanhã' : activeRange === 'past' ? 'Passado' : 'Próximos')}
               </h2>
-              <p className="text-xs font-medium text-slate-400 mt-0.5">
-                {filteredTasks.length} {filteredTasks.length === 1 ? 'tarefa encontrada' : 'tarefas encontradas'}
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                {filteredTasks.length} {filteredTasks.length === 1 ? 'item ativo' : 'itens ativos'}
               </p>
             </div>
 
-            <div className="max-w-md w-full relative group ml-auto md:ml-0">
-              <span className="absolute inset-y-0 left-4 flex items-center text-slate-400 group-focus-within:text-indigo-500 transition-colors">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <div className="max-w-sm w-full relative group ml-auto lg:ml-8">
+              <span className="absolute inset-y-0 left-5 flex items-center text-slate-400 group-focus-within:text-indigo-600 transition-colors">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               </span>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Pesquisar tarefas..."
-                className="w-full pl-12 pr-6 py-3.5 bg-slate-100 border-none rounded-2xl text-sm font-semibold focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-slate-900 placeholder-slate-400"
+                placeholder="Pesquisar..."
+                className="w-full pl-14 pr-6 py-4 bg-slate-100 border-2 border-transparent rounded-[20px] text-sm font-bold focus:bg-white focus:border-indigo-600/20 focus:ring-4 focus:ring-indigo-600/5 outline-none transition-all text-slate-900 placeholder-slate-400"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-4 ml-4">
-            <div className="hidden sm:flex bg-slate-100 p-1.5 rounded-2xl">
+          <div className="flex items-center gap-5 ml-6">
+            <div className="hidden sm:flex bg-slate-100 p-1.5 rounded-[18px]">
               <button 
                 onClick={() => setViewType('list')}
-                className={`p-2 rounded-xl transition-all ${viewType === 'list' ? 'bg-white shadow-md shadow-slate-200 text-indigo-600' : 'text-slate-500 hover:text-slate-800'}`}
+                className={`p-2.5 rounded-xl transition-all duration-300 ${viewType === 'list' ? 'bg-white shadow-lg shadow-slate-200 text-indigo-600 scale-105' : 'text-slate-400 hover:text-slate-600'}`}
                 title="Lista"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" /></svg>
               </button>
               <button 
                 onClick={() => setViewType('agenda')}
-                className={`p-2 rounded-xl transition-all ${viewType === 'agenda' ? 'bg-white shadow-md shadow-slate-200 text-indigo-600' : 'text-slate-500 hover:text-slate-800'}`}
+                className={`p-2.5 rounded-xl transition-all duration-300 ${viewType === 'agenda' ? 'bg-white shadow-lg shadow-slate-200 text-indigo-600 scale-105' : 'text-slate-400 hover:text-slate-600'}`}
                 title="Agenda"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
@@ -261,20 +259,20 @@ const App: React.FC = () => {
             
             <button 
               onClick={() => setIsTaskModalOpen(true)}
-              className="bg-indigo-600 text-white px-6 py-3.5 rounded-2xl font-bold text-sm flex items-center gap-2.5 shadow-xl shadow-indigo-100 hover:bg-indigo-700 hover:shadow-indigo-200 hover:-translate-y-0.5 transition-all active:scale-95 whitespace-nowrap"
+              className="bg-indigo-600 text-white px-7 py-4 rounded-[20px] font-black text-xs uppercase tracking-widest flex items-center gap-3 shadow-2xl shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-1 transition-all active:scale-95 whitespace-nowrap"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" /></svg>
-              <span>NOVA TAREFA</span>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3.5} d="M12 4v16m8-8H4" /></svg>
+              <span>ADICIONAR</span>
             </button>
           </div>
         </header>
 
-        {/* Dynamic Content Area */}
-        <div className="flex-grow overflow-y-auto p-6 md:p-12 custom-scrollbar scroll-smooth">
+        {/* Viewport Content */}
+        <div className="flex-grow overflow-y-auto p-8 md:p-14 custom-scrollbar scroll-smooth">
           {viewType === 'notes' ? (
             <NotesView tasks={filteredTasks} onUpdateTask={updateTask} />
           ) : viewType === 'list' ? (
-            <div className="max-w-4xl mx-auto space-y-6 pb-20">
+            <div className="max-w-4xl mx-auto space-y-5 pb-24">
               {filteredTasks.length > 0 ? (
                 filteredTasks.map(task => (
                   <TaskItem 
@@ -291,14 +289,14 @@ const App: React.FC = () => {
               )}
             </div>
           ) : (
-            <div className="max-w-6xl mx-auto pb-20">
+            <div className="max-w-6xl mx-auto pb-24">
               <AgendaView tasks={filteredTasks} labels={labels} onToggle={toggleTask} onDelete={deleteTask} onEdit={(t) => { setEditingTask(t); setIsTaskModalOpen(true); }} />
             </div>
           )}
         </div>
       </main>
 
-      {/* Modals */}
+      {/* Overlays & Modals */}
       {isTaskModalOpen && (
         <TaskModal 
           task={editingTask} 
@@ -333,19 +331,20 @@ interface SidebarItemProps {
 const SidebarItem: React.FC<SidebarItemProps> = ({ active, onClick, icon, label, count, variant = 'default' }) => (
   <button 
     onClick={onClick} 
-    className={`w-full flex items-center gap-4 px-4 py-4 rounded-2xl text-sm font-bold transition-all ${
+    className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold transition-all duration-300 relative group ${
       active 
-        ? 'bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-100' 
-        : 'text-slate-500 hover:bg-slate-50 hover:pl-5'
+        ? 'bg-indigo-50 text-indigo-700 shadow-sm' 
+        : 'text-slate-500 hover:bg-slate-50 hover:pl-6'
     }`}
   >
-    <span className={`${active ? 'text-indigo-600' : 'text-slate-400'} flex-shrink-0`}>{icon}</span>
+    {active && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-indigo-600 rounded-r-full" />}
+    <span className={`${active ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-400'} flex-shrink-0 transition-colors`}>{icon}</span>
     <span className="flex-grow text-left tracking-tight whitespace-nowrap">{label}</span>
     {count !== undefined && count > 0 && (
-      <span className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold tracking-wider ${
-        variant === 'danger' && !active ? 'bg-red-50 text-red-500' : 
-        active ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-500'
-      }`}>
+      <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black tracking-widest ${
+        variant === 'danger' && !active ? 'bg-rose-50 text-rose-500' : 
+        active ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100' : 'bg-slate-100 text-slate-500'
+      } transition-all`}>
         {count}
       </span>
     )}
@@ -353,19 +352,19 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ active, onClick, icon, label,
 );
 
 const EmptyState: React.FC<{ onAction: () => void }> = ({ onAction }) => (
-  <div className="flex flex-col items-center justify-center py-24 text-center">
-    <div className="w-24 h-24 bg-slate-100 rounded-[2.5rem] flex items-center justify-center mb-8 rotate-3 shadow-inner shadow-slate-200">
-      <svg className="w-12 h-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+  <div className="flex flex-col items-center justify-center py-28 text-center animate-in fade-in zoom-in duration-500">
+    <div className="w-28 h-28 bg-slate-50 rounded-[40px] flex items-center justify-center mb-10 rotate-2 shadow-inner shadow-slate-200">
+      <svg className="w-14 h-14 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
     </div>
-    <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">Nada para mostrar</h3>
-    <p className="text-slate-500 mt-2 max-w-[280px] font-medium">Sua lista está limpa. Que tal planejar algo novo para este período?</p>
+    <h3 className="text-2xl font-black text-slate-950 tracking-tight">Caminho Livre</h3>
+    <p className="text-slate-400 mt-2 max-w-[280px] font-bold text-sm leading-relaxed uppercase tracking-wider opacity-60">Sem tarefas pendentes aqui.</p>
     <button 
       onClick={onAction}
-      className="mt-8 text-indigo-600 font-bold hover:text-indigo-700 underline underline-offset-8 decoration-2 decoration-indigo-200 hover:decoration-indigo-500 transition-all"
+      className="mt-10 bg-white border-2 border-indigo-100 text-indigo-600 font-black px-8 py-3 rounded-2xl hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all shadow-sm"
     >
-      Criar minha primeira tarefa
+      Criar Nova Tarefa
     </button>
   </div>
 );
