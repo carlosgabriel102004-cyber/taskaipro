@@ -52,15 +52,15 @@ export function formatDate(dateStr: string): string {
   });
 }
 
+// Fixed: Added missing formatFullDate function required by AgendaView to display weekday and full date
 export function formatFullDate(dateStr: string): string {
   if (!dateStr) return "";
-  const parts = dateStr.split('T')[0].split('-');
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
   const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-  
   return d.toLocaleDateString('pt-BR', { 
     weekday: 'long',
-    day: 'numeric', 
-    month: 'long',
-    year: 'numeric'
+    day: '2-digit', 
+    month: 'long'
   });
 }

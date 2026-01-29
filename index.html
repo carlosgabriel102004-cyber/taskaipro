@@ -13,21 +13,6 @@
     <script>
         window.process = { env: { NODE_ENV: 'production', API_KEY: "" } };
         
-        window.addEventListener('error', function(e) {
-            const root = document.getElementById('root');
-            if (root && (root.innerHTML === '' || root.innerHTML.includes('Iniciando'))) {
-                root.innerHTML = `<div style="padding: 40px; color: #ef4444; font-family: 'Plus Jakarta Sans', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; background: #fff;">
-                    <div style="background: #fee2e2; padding: 20px; border-radius: 24px; margin-bottom: 24px;">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                    </div>
-                    <h2 style="font-weight: 800; font-size: 24px; margin-bottom: 8px;">Erro ao Inicializar</h2>
-                    <p style="color: #64748b; max-width: 400px; margin-bottom: 24px;">Houve um problema ao carregar o TaskPro AI. Certifique-se de que a conexão está estável.</p>
-                    <pre style="background: #f8fafc; padding: 16px; border-radius: 12px; font-size: 12px; overflow: auto; max-width: 90vw; text-align: left; border: 1px solid #e2e8f0;">${e.message}</pre>
-                    <button onclick="location.reload()" style="margin-top: 24px; background: #6366f1; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer;">Tentar Novamente</button>
-                </div>`;
-            }
-        });
-
         tailwind.config = {
             theme: {
                 extend: {
@@ -54,7 +39,7 @@
         }
     </script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; margin: 0; padding: 0; overflow: hidden; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fafbfc; margin: 0; padding: 0; overflow: hidden; }
         #root:empty::before {
             content: "";
             position: fixed;
@@ -102,6 +87,6 @@
 </head>
 <body>
     <div id="root"></div>
-    <script type="module" src="https://esm.sh/run/./index.tsx"></script>
+    <script type="module" src="./index.tsx"></script>
 </body>
 </html>
