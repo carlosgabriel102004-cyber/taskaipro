@@ -40,27 +40,48 @@ export function formatDate(dateStr: string): string {
   tomorrowDate.setDate(tomorrowDate.getDate() + 1);
   if (taskDate === getLocalDateString(tomorrowDate)) return "Amanhã";
 
-  const yesterdayDate = new Date();
-  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-  if (taskDate === getLocalDateString(yesterdayDate)) return "Ontem";
-
   const parts = taskDate.split('-');
+  if(parts.length < 3) return dateStr;
   const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-  return d.toLocaleDateString('pt-BR', { 
-    day: '2-digit', 
-    month: 'short' 
-  });
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
 }
 
-// Fixed: Added missing formatFullDate function required by AgendaView to display weekday and full date
 export function formatFullDate(dateStr: string): string {
   if (!dateStr) return "";
   const parts = dateStr.split('-');
   if (parts.length !== 3) return dateStr;
   const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-  return d.toLocaleDateString('pt-BR', { 
-    weekday: 'long',
-    day: '2-digit', 
-    month: 'long'
-  });
+  return d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
+}
+
+export function getDaysInMonth(year: number, month: number) {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+export function getFirstDayOfMonth(year: number, month: number) {
+  return new Date(year, month, 1).getDay();
+}
+
+export function generateRecurringDates(startDate: string, type: string, until: string): string[] {
+  const dates: string[] = [];
+  let current = new Date(startDate + 'T00:00:00');
+  const endDate = new Date(until + 'T23:59:59');
+
+  // Adiciona a primeira data
+  dates.push(getLocalDateString(current));
+
+  while (true) {
+    if (type === 'daily') current.setDate(current.getDate() + 1);
+    else if (type === 'weekly') current.setDate(current.getDate() + 7);
+    else if (type === 'monthly') current.setMonth(current.getMonth() + 1);
+    else if (type === 'yearly') current.setFullYear(current.getFullYear() + 1);
+    else break;
+
+    if (current > endDate) break;
+    dates.push(getLocalDateString(current));
+    
+    // Safety break to prevent infinite loops (max 366 instances for a year)
+    if (dates.length > 366) break;
+  }
+  return dates;
 }
