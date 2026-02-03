@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Task, Label, TimeRange, Priority, ViewType } from './types.ts';
-import { INITIAL_LABELS, INITIAL_TASKS } from './constants.tsx';
-import { isToday, isTomorrow, isPast, getLocalDateString, generateRecurringDates } from './utils/dateUtils.ts';
-import TaskItem from './components/TaskItem.tsx';
-import TaskModal from './components/TaskModal.tsx';
-import LabelManager from './components/LabelManager.tsx';
-import CalendarView from './components/CalendarView.tsx';
-import NotesView from './components/NotesView.tsx';
+import { Task, Label, TimeRange, Priority, ViewType } from './types';
+import { INITIAL_LABELS, INITIAL_TASKS } from './constants';
+import { isToday, isTomorrow, isPast, getLocalDateString, generateRecurringDates } from './utils/dateUtils';
+import TaskItem from './components/TaskItem';
+import TaskModal from './components/TaskModal';
+import LabelManager from './components/LabelManager';
+import CalendarView from './components/CalendarView';
+import NotesView from './components/NotesView';
 
 interface SidebarItemProps {
   active: boolean;
@@ -70,7 +70,6 @@ const App: React.FC = () => {
     localStorage.setItem('labels_elite_v2', JSON.stringify(labels));
   }, [labels]);
 
-  // Hook para monitorar e disparar Webhooks
   useEffect(() => {
     const todayStr = getLocalDateString();
     const tasksToTrigger = tasks.filter(t => t.webhookEnabled && t.dueDate === todayStr && !t.completed);
@@ -90,7 +89,6 @@ const App: React.FC = () => {
           })
         });
         localStorage.setItem(webhookKey, 'true');
-        console.log(`Webhook disparado para: ${task.title}`);
       } catch (err) {
         console.error('Falha ao disparar webhook:', err);
       }
@@ -109,8 +107,7 @@ const App: React.FC = () => {
     return tasks.filter(task => {
       const titleLower = (task.title || '').toLowerCase();
       const queryLower = searchQuery.toLowerCase();
-      const matchesSearch = titleLower.includes(queryLower);
-      if (!matchesSearch) return false;
+      if (!titleLower.includes(queryLower)) return false;
 
       switch (activeRange) {
         case 'today': return isToday(task.dueDate);
@@ -162,22 +159,10 @@ const App: React.FC = () => {
     setEditingTask(null);
   };
 
-  const handleUpdateTask = (id: string, updates: Partial<Task>) => {
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
-  };
-
   const formattedCalendarTitle = useMemo(() => {
     const monthName = calendarDate.toLocaleDateString('pt-BR', { month: 'long' });
     return `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} De ${calendarDate.getFullYear()}`;
   }, [calendarDate]);
-
-  const rangeTitle = {
-    today: 'Foco de Hoje',
-    tomorrow: 'Planejado: Amanhã',
-    past: 'Dias Passados',
-    upcoming: 'Próximos Dias',
-    all: 'Lista Geral'
-  };
 
   return (
     <div className="flex h-screen bg-[#F8F9FD] overflow-hidden text-[#2A2A5E]">
@@ -188,104 +173,60 @@ const App: React.FC = () => {
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
             </div>
             {!isSidebarCollapsed && (
-              <div className="animate-in fade-in duration-300">
+              <div>
                 <h1 className="text-lg font-black text-[#2A2A5E] leading-none">TaskPro <span className="text-[#3F51B5]">AI</span></h1>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">ORGANIZAÇÃO ELITE</p>
               </div>
             )}
           </div>
-
-          <div className="flex-grow px-4 overflow-y-auto custom-scrollbar pt-4">
-            <div className="mb-10">
-              {!isSidebarCollapsed && <h3 className="px-4 mb-4 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">CRONOGRAMA</h3>}
-              <nav className="space-y-1">
-                <SidebarItem isCollapsed={isSidebarCollapsed} active={currentView === 'calendar'} onClick={() => { setCurrentView('calendar'); setMobileMenuOpen(false); }} icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>} label="Calendário Mensal" />
-                <SidebarItem isCollapsed={isSidebarCollapsed} active={currentView === 'list' && activeRange === 'past'} onClick={() => { setCurrentView('list'); setActiveRange('past'); setMobileMenuOpen(false); }} icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="9" /><path d="M12 8v4l3 3" /></svg>} label="Dias Passados" />
-                <SidebarItem isCollapsed={isSidebarCollapsed} active={currentView === 'list' && activeRange === 'today'} onClick={() => { setCurrentView('list'); setActiveRange('today'); setMobileMenuOpen(false); }} icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>} label="Foco de Hoje" count={stats.today} />
-                <SidebarItem isCollapsed={isSidebarCollapsed} active={currentView === 'list' && activeRange === 'tomorrow'} onClick={() => { setCurrentView('list'); setActiveRange('tomorrow'); setMobileMenuOpen(false); }} icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 10h18" /><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /></svg>} label="Amanhã" count={stats.tomorrow} />
-              </nav>
-            </div>
-
-            <div className="mb-10">
-              {!isSidebarCollapsed && <h3 className="px-4 mb-4 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">WORKSPACE</h3>}
-              <nav className="space-y-1">
-                <SidebarItem isCollapsed={isSidebarCollapsed} active={currentView === 'notes'} onClick={() => { setCurrentView('notes'); setMobileMenuOpen(false); }} icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>} label="Notas de Texto" />
-              </nav>
-            </div>
+          <div className="flex-grow px-4 overflow-y-auto pt-4">
+            <nav className="space-y-1">
+              <SidebarItem isCollapsed={isSidebarCollapsed} active={currentView === 'calendar'} onClick={() => setCurrentView('calendar')} icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="10" x2="21" y2="10" /></svg>} label="Calendário Mensal" />
+              <SidebarItem isCollapsed={isSidebarCollapsed} active={currentView === 'list' && activeRange === 'past'} onClick={() => { setCurrentView('list'); setActiveRange('past'); }} icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="9" /><path d="M12 8v4l3 3" /></svg>} label="Dias Passados" />
+              <SidebarItem isCollapsed={isSidebarCollapsed} active={currentView === 'list' && activeRange === 'today'} onClick={() => { setCurrentView('list'); setActiveRange('today'); }} icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><path d="M3 10h18" /></svg>} label="Foco de Hoje" count={stats.today} />
+              <SidebarItem isCollapsed={isSidebarCollapsed} active={currentView === 'list' && activeRange === 'tomorrow'} onClick={() => { setCurrentView('list'); setActiveRange('tomorrow'); }} icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /></svg>} label="Amanhã" count={stats.tomorrow} />
+              <SidebarItem isCollapsed={isSidebarCollapsed} active={currentView === 'notes'} onClick={() => setCurrentView('notes')} icon={<svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /></svg>} label="Notas" />
+            </nav>
           </div>
-
-          <button onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} className="absolute bottom-32 -right-3 w-6 h-6 bg-white border border-slate-100 rounded-full flex items-center justify-center text-slate-400 hover:text-indigo-600 shadow-sm z-50 transition-all hover:scale-110"><svg className={`w-3 h-3 transition-transform ${isSidebarCollapsed ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7" strokeWidth={3} /></svg></button>
-
           <div className="p-6 border-t border-slate-50">
-            <button onClick={() => setIsLabelManagerOpen(true)} className="flex items-center justify-between w-full px-4 py-2 hover:bg-slate-50 rounded-lg text-slate-400 group">
-              <div className="flex items-center gap-3">
-                <div className="w-6 h-6 flex items-center justify-center bg-slate-100 rounded text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 5v14M5 12h14" strokeWidth={2.5} /></svg></div>
-                {!isSidebarCollapsed && <span className="text-[10px] font-black uppercase tracking-widest">ETIQUETAS</span>}
-              </div>
+            <button onClick={() => setIsLabelManagerOpen(true)} className="flex items-center gap-3 w-full px-4 py-2 hover:bg-slate-50 rounded-lg text-slate-400">
+               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M7 7h10v10H7z" /></svg>
+               {!isSidebarCollapsed && <span className="text-[10px] font-black uppercase">Etiquetas</span>}
             </button>
           </div>
         </div>
       </aside>
-
-      <main className="flex-grow flex flex-col h-full overflow-hidden relative">
+      <main className="flex-grow flex flex-col h-full overflow-hidden">
         <header className="px-10 py-8 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button onClick={() => setMobileMenuOpen(true)} className="md:hidden p-2 text-slate-400 hover:text-[#3F51B5]"><svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg></button>
-            <div>
-              <h2 className="text-2xl font-black text-[#2A2A5E] tracking-tight">
-                {currentView === 'calendar' ? formattedCalendarTitle : currentView === 'notes' ? 'Minhas Notas' : rangeTitle[activeRange]}
-              </h2>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
-                {currentView === 'notes' ? `${tasks.length} NOTAS` : `${filteredTasks.length} ITEM ATIVO`}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex-grow max-w-lg px-8">
-            <div className="relative">
-              <span className="absolute inset-y-0 left-4 flex items-center text-slate-400"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></span>
-              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Pesquisar..." className="w-full pl-11 pr-4 py-2.5 bg-[#EEF2FF] border-none rounded-full text-sm font-medium placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-200 transition-all shadow-sm shadow-indigo-50/50" />
-            </div>
-          </div>
-          
+          <h2 className="text-2xl font-black text-[#2A2A5E]">
+            {currentView === 'calendar' ? formattedCalendarTitle : currentView === 'notes' ? 'Minhas Notas' : 'Tarefas'}
+          </h2>
           <div className="flex items-center gap-3">
-            {currentView === 'calendar' ? (
-              <div className="flex items-center bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                <button onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1, 1))} className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-50 border-r border-slate-50 transition-colors"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7" strokeWidth={2.5} /></svg></button>
-                <button onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 1))} className="p-2.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-50 transition-colors"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5l7 7-7 7" strokeWidth={2.5} /></svg></button>
-              </div>
-            ) : (
-              <div className="flex items-center bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                <button onClick={() => setCurrentView('list')} className={`p-2.5 ${currentView === 'list' ? 'text-indigo-600 bg-indigo-50' : 'text-slate-400 hover:bg-slate-50'} border-r border-slate-50 transition-colors`}><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h16" strokeWidth={2} /></svg></button>
-                <button onClick={() => setCurrentView('calendar')} className={`p-2.5 ${currentView === 'calendar' ? 'text-indigo-600 bg-indigo-50' : 'text-slate-400 hover:bg-slate-50'} transition-colors`}><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" strokeWidth={2} /></svg></button>
+            {currentView === 'calendar' && (
+              <div className="flex bg-white rounded-xl shadow-sm border border-slate-100">
+                <button onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1, 1))} className="p-2 border-r border-slate-50"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7" /></svg></button>
+                <button onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 1))} className="p-2"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5l7 7-7 7" /></svg></button>
               </div>
             )}
-            <button onClick={() => setIsTaskModalOpen(true)} className="bg-[#3F51B5] text-white pl-4 pr-6 py-2.5 rounded-full font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-100 hover:bg-[#303F9F] transition-all"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M12 5v14M5 12h14" /></svg>ADICIONAR</button>
+            <button onClick={() => setIsTaskModalOpen(true)} className="bg-[#3F51B5] text-white px-6 py-2.5 rounded-full font-bold text-xs shadow-lg shadow-indigo-100 hover:bg-[#303F9F] transition-all flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M12 5v14M5 12h14" /></svg> NOVO
+            </button>
           </div>
         </header>
-
-        <div className={`flex-grow overflow-y-auto custom-scrollbar ${currentView === 'calendar' ? 'p-0 sm:p-4 md:p-6 lg:p-8' : 'px-10 pb-10'}`}>
+        <div className="flex-grow overflow-y-auto px-10 pb-10 custom-scrollbar">
           {currentView === 'calendar' ? (
-            <CalendarView tasks={tasks} labels={labels} currentDate={calendarDate} onSelectDate={(d) => { setActiveRange('all'); handleSaveTask({ dueDate: d }); setIsTaskModalOpen(true); }} onEditTask={(t) => { setEditingTask(t); setIsTaskModalOpen(true); }} />
+            <CalendarView tasks={tasks} labels={labels} currentDate={calendarDate} onSelectDate={(d) => { setIsTaskModalOpen(true); }} onEditTask={(t) => { setEditingTask(t); setIsTaskModalOpen(true); }} />
           ) : currentView === 'notes' ? (
-            <NotesView tasks={tasks} onUpdateTask={handleUpdateTask} />
+            <NotesView tasks={tasks} onUpdateTask={(id, updates) => setTasks(prev => prev.map(t => t.id === id ? {...t, ...updates} : t))} />
           ) : (
-            <div className="max-w-4xl mx-auto space-y-6 pt-6">
-              {filteredTasks.length > 0 ? (
-                filteredTasks.map(task => (
-                  <TaskItem key={task.id} task={task} labels={labels} onToggle={(id) => setTasks(prev => prev.map(t => t.id === id ? {...t, completed: !t.completed} : t))} onDelete={(id) => confirm('Excluir?') && setTasks(prev => prev.filter(t => t.id !== id))} onEdit={(t) => { setEditingTask(t); setIsTaskModalOpen(true); }} />
-                ))
-              ) : (
-                <div className="flex flex-col items-center justify-center py-40 opacity-20">
-                  <svg className="w-20 h-20 text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" strokeWidth={1.5} /></svg>
-                  <p className="font-bold text-slate-400">Nenhum item encontrado</p>
-                </div>
-              )}
+            <div className="max-w-4xl mx-auto space-y-6">
+              {filteredTasks.map(task => (
+                <TaskItem key={task.id} task={task} labels={labels} onToggle={(id) => setTasks(prev => prev.map(t => t.id === id ? {...t, completed: !t.completed} : t))} onDelete={(id) => setTasks(prev => prev.filter(t => t.id !== id))} onEdit={(t) => { setEditingTask(t); setIsTaskModalOpen(true); }} />
+              ))}
             </div>
           )}
         </div>
       </main>
-
       {isTaskModalOpen && <TaskModal task={editingTask} labels={labels} onSave={handleSaveTask} onClose={() => {setIsTaskModalOpen(false); setEditingTask(null);}} />}
       {isLabelManagerOpen && <LabelManager labels={labels} onAdd={(n, c) => setLabels([...labels, {id: Date.now().toString(), name: n, color: c}])} onDelete={(id) => setLabels(labels.filter(l => l.id !== id))} onClose={() => setIsLabelManagerOpen(false)} />}
     </div>
