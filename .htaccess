@@ -1,19 +1,2 @@
 
-# Configurações para TaskPro AI no cPanel
-<IfModule mod_mime.c>
-  AddType application/javascript .ts
-  AddType application/javascript .tsx
-</IfModule>
-
-# Corrige possíveis erros de "CORS" ou bloqueios de módulos
-<IfModule mod_headers.c>
-  Header set Access-Control-Allow-Origin "*"
-  <FilesMatch "\.(ts|tsx|js|html|css)$">
-    Header set Cache-Control "no-cache, no-store, must-revalidate"
-    Header set Pragma "no-cache"
-    Header set Expires "0"
-  </FilesMatch>
-</IfModule>
-
-# Garante que o servidor não tente processar .tsx como arquivos CGI ou similar
-Options -ExecCGI
+# Arquivo limpo para evitar conflitos de deploy.
