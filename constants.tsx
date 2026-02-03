@@ -14,25 +14,5 @@ export const INITIAL_LABELS: Label[] = [
   { id: 'l3', name: 'Urgente', color: '#ef4444' },
 ];
 
-export const INITIAL_TASKS = [
-  {
-    id: '1',
-    title: 'Finalizar relatório mensal',
-    description: 'Revisar métricas de vendas e KPIs do mês passado.',
-    dueDate: new Date().toISOString(),
-    completed: false,
-    priority: Priority.HIGH,
-    labelIds: ['l1', 'l3'],
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: '2',
-    title: 'Comprar mantimentos',
-    description: 'Frutas, legumes e leite.',
-    dueDate: new Date(Date.now() + 86400000).toISOString(),
-    completed: false,
-    priority: Priority.MEDIUM,
-    labelIds: ['l2'],
-    createdAt: new Date().toISOString()
-  }
-];
+// Tarefas zeradas conforme solicitado
+export const INITIAL_TASKS = [];
