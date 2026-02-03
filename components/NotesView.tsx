@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Task, Priority } from '../types.ts';
-import Button from './Button.tsx';
+import { Task } from '../types';
+import Button from './Button';
 
 interface NotesViewProps {
   tasks: Task[];
@@ -60,7 +60,7 @@ const NotesView: React.FC<NotesViewProps> = ({ tasks, onUpdateTask }) => {
                     value={editDesc}
                     onChange={(e) => setEditDesc(e.target.value)}
                     className="w-full min-h-[300px] text-xl text-slate-700 bg-slate-50 border-none focus:ring-0 rounded-xl p-4 leading-relaxed outline-none resize-y"
-                    placeholder="Escreva seus detalhes aqui com todo o espaço que precisar..."
+                    placeholder="Escreva seus detalhes aqui..."
                   />
                   <div className="mt-6 flex justify-end gap-3">
                     <Button variant="ghost" onClick={() => setEditingId(null)} className="font-bold">Cancelar</Button>
@@ -90,22 +90,6 @@ const NotesView: React.FC<NotesViewProps> = ({ tasks, onUpdateTask }) => {
                   <p className="text-slate-600 leading-relaxed whitespace-pre-wrap text-xl font-medium">
                     {task.description || "Esta tarefa não possui uma descrição detalhada. Clique para adicionar."}
                   </p>
-                  <div className="mt-8 flex items-center gap-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                    <div className="flex items-center gap-1.5">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>Criado em {new Date(task.createdAt).toLocaleDateString('pt-BR')}</span>
-                    </div>
-                    {task.completed && (
-                      <div className="flex items-center gap-1.5 text-emerald-500">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span>Concluída</span>
-                      </div>
-                    )}
-                  </div>
                 </div>
               </div>
             )}

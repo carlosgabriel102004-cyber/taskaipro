@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Task, Label, Priority, RecurrenceType } from '../types.ts';
-import { analyzeTaskPrompt } from '../services/geminiService.ts';
+import { Task, Label, Priority, RecurrenceType } from '../types';
+import { analyzeTaskPrompt } from '../services/geminiService';
 
 interface TaskModalProps {
   task?: Task | null;
@@ -20,7 +20,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, labels, defaultDate, onSave
   const [recurrenceType, setRecurrenceType] = useState<RecurrenceType>(task?.recurrence?.type || 'none');
   const [recurrenceUntil, setRecurrenceUntil] = useState(task?.recurrence?.until || '');
   const [webhookEnabled, setWebhookEnabled] = useState(task?.webhookEnabled || false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +46,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, labels, defaultDate, onSave
             <h2 className="text-2xl font-black text-slate-900 tracking-tight">Agendar Tarefa</h2>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Sincronização Elite Ativa</p>
           </div>
-          <button onClick={onClose} className="p-3 text-slate-300 hover:text-slate-900 hover:bg-white rounded-2xl shadow-sm transition-all border border-transparent hover:border-slate-100">
+          <button onClick={onClose} type="button" className="p-3 text-slate-300 hover:text-slate-900 hover:bg-white rounded-2xl shadow-sm transition-all border border-transparent hover:border-slate-100">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         </div>
@@ -98,31 +97,6 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, labels, defaultDate, onSave
                   <button type="button" onClick={() => setWebhookEnabled(!webhookEnabled)} className={`w-12 h-6 rounded-full transition-all relative ${webhookEnabled ? 'bg-emerald-500' : 'bg-slate-300'}`}>
                     <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${webhookEnabled ? 'left-7' : 'left-1'}`} />
                   </button>
-               </div>
-
-               <div className="pt-4 border-t border-slate-100 grid grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Repetir Tarefa</label>
-                    <select
-                      value={recurrenceType} onChange={(e) => setRecurrenceType(e.target.value as RecurrenceType)}
-                      className="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl outline-none text-xs font-bold text-slate-700"
-                    >
-                      <option value="none">Não repetir</option>
-                      <option value="daily">Diariamente</option>
-                      <option value="weekly">Semanalmente</option>
-                      <option value="monthly">Mensalmente</option>
-                      <option value="yearly">Anualmente</option>
-                    </select>
-                  </div>
-                  {recurrenceType !== 'none' && (
-                    <div className="animate-in slide-in-from-right-2 duration-300">
-                      <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Até Quando?</label>
-                      <input
-                        type="date" value={recurrenceUntil} onChange={(e) => setRecurrenceUntil(e.target.value)}
-                        className="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl outline-none text-xs font-bold text-slate-700"
-                      />
-                    </div>
-                  )}
                </div>
             </div>
 

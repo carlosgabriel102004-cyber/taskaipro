@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Task, Label } from '../types.ts';
-import { getDaysInMonth, getFirstDayOfMonth, getLocalDateString } from '../utils/dateUtils.ts';
+import { Task, Label } from '../types';
+import { getDaysInMonth, getFirstDayOfMonth, getLocalDateString } from '../utils/dateUtils';
 
 interface CalendarViewProps {
   tasks: Task[];
@@ -31,14 +31,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({ tasks, labels, currentDate,
 
   return (
     <div className="bg-white rounded-[40px] shadow-sm border border-slate-100 flex flex-col h-full w-full overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Dias da Semana - Estilo Premium Minimalista */}
       <div className="grid grid-cols-7 border-b border-slate-50">
         {weekDays.map(wd => (
           <div key={wd} className="py-6 text-center text-[10px] font-black text-slate-300 uppercase tracking-[0.25em]">{wd}</div>
         ))}
       </div>
       
-      {/* Grade de Dias - Maximizada */}
       <div className="flex-grow grid grid-cols-7 auto-rows-fr">
         {days.map((day, idx) => {
           if (day === null) return <div key={`empty-${idx}`} className="border-r border-b border-slate-50 last:border-r-0" />;
@@ -56,9 +54,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({ tasks, labels, currentDate,
                 <span className={`text-sm font-black transition-all ${isToday ? 'text-[#3F51B5] scale-125' : 'text-slate-400 group-hover:text-slate-600'}`}>
                   {day}
                 </span>
-                {dayTasks.some(t => t.webhookEnabled) && (
-                   <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" title="Webhook Ativo" />
-                )}
               </div>
               
               <div className="flex flex-col gap-1.5 overflow-hidden">
@@ -72,12 +67,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ tasks, labels, currentDate,
                         : 'bg-[#EEF2FF] text-[#3F51B5] border-indigo-100 hover:shadow-md hover:bg-white'
                     }`}
                   >
-                    <div className="flex items-center gap-1">
-                      {t.recurrence && t.recurrence.type !== 'none' && (
-                        <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeWidth={3} /></svg>
-                      )}
-                      {t.title}
-                    </div>
+                    {t.title}
                   </div>
                 ))}
               </div>

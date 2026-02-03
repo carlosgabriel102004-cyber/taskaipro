@@ -1,6 +1,5 @@
 
-import React from 'react';
-import { Label, Priority } from './types.ts';
+import { Label } from './types';
 
 export const PRESET_COLORS = [
   '#ef4444', '#f97316', '#f59e0b', '#10b981', 
@@ -14,5 +13,4 @@ export const INITIAL_LABELS: Label[] = [
   { id: 'l3', name: 'Urgente', color: '#ef4444' },
 ];
 
-// Tarefas zeradas conforme solicitado
 export const INITIAL_TASKS = [];

@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Task, Label, Priority } from '../types.ts';
-import { formatDate } from '../utils/dateUtils.ts';
+import { Task, Label, Priority } from '../types';
+import { formatDate } from '../utils/dateUtils';
 
 interface TaskItemProps {
   task: Task;
@@ -22,12 +22,10 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, labels, onToggle, onDelete, o
 
   return (
     <div className={`group relative bg-white rounded-3xl p-7 flex items-start gap-5 shadow-sm hover:shadow-xl hover:shadow-indigo-50/40 transition-all duration-300 border border-slate-50/50 ${task.completed ? 'opacity-40 grayscale-[0.5]' : ''}`}>
-      {/* Indicator Bar per Image */}
       <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-12 rounded-r-full transition-colors ${
         task.completed ? 'bg-slate-200' : task.priority === Priority.HIGH ? 'bg-rose-500' : 'bg-indigo-600'
       }`} />
 
-      {/* Modern Large Checkbox */}
       <button 
         onClick={() => onToggle(task.id)}
         className={`mt-1 flex-shrink-0 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
@@ -75,12 +73,6 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, labels, onToggle, onDelete, o
                 title={l.name}
               />
             ))}
-            {taskLabels.length === 0 && (
-              <div className="flex gap-1">
-                <div className="w-2.5 h-2.5 rounded-full bg-indigo-200 border border-white" />
-                <div className="w-2.5 h-2.5 rounded-full bg-rose-200 border border-white" />
-              </div>
-            )}
           </div>
         </div>
       </div>
