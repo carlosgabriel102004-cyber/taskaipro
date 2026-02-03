@@ -1,11 +1,17 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Analyze task prompt using Gemini AI to suggest priority and label
 export async function analyzeTaskPrompt(prompt: string) {
   try {
-    // Fixed: Initialize GoogleGenAI with the required configuration and direct environment variable access
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    // Busca a chave de forma resiliente tanto no global quanto no window
+    const apiKey = process.env.API_KEY || (window as any).process?.env?.API_KEY;
+    
+    if (!apiKey) {
+      console.error("API Key não encontrada.");
+      return null;
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: `Analise a seguinte tarefa e sugira uma prioridade (Baixa, Média, Alta) e um rótulo adequado. Tarefa: "${prompt}"`,
@@ -23,7 +29,6 @@ export async function analyzeTaskPrompt(prompt: string) {
       }
     });
 
-    // Fixed: Access the text property directly without calling it as a method
     const text = response.text;
     if (text) {
       return JSON.parse(text);
