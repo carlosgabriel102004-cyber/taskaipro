@@ -11,7 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
-        window.process = window.process || { env: {} };
+        // Polyfill essencial para o SDK do Gemini funcionar em qualquer ambiente
+        window.process = { env: { NODE_ENV: 'production' } };
+        
         tailwind.config = {
             theme: {
                 extend: {
@@ -46,6 +48,6 @@
 </head>
 <body>
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <script type="module" src="./index.tsx"></script>
 </body>
 </html>

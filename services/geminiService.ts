@@ -3,18 +3,17 @@ import { GoogleGenAI, Type } from "@google/genai";
 
 export async function analyzeTaskPrompt(prompt: string) {
   try {
-    // Busca a chave de forma resiliente tanto no global quanto no window
-    const apiKey = process.env.API_KEY || (window as any).process?.env?.API_KEY;
+    const apiKey = process.env.API_KEY;
     
     if (!apiKey) {
-      console.error("API Key não encontrada.");
+      console.warn("API Key não configurada. A análise por IA não estará disponível.");
       return null;
     }
 
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: `Analise a seguinte tarefa e sugira uma prioridade (Baixa, Média, Alta) e um rótulo adequado. Tarefa: "${prompt}"`,
+      contents: `Analise a seguinte tarefa e sugira uma prioridade (Baixa, Média, Alta) e um rótulo curto adequado. Tarefa: "${prompt}"`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
