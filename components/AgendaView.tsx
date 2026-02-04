@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Task, Label } from '../types.ts';
-import TaskItem from './TaskItem.tsx';
-import { formatFullDate, formatDate } from '../utils/dateUtils.ts';
+import { Task, Label } from '../types';
+import TaskItem from './TaskItem';
+import { formatFullDate, formatDate } from '../utils/dateUtils';
 
 interface AgendaViewProps {
   tasks: Task[];

@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { Label } from '../types.ts';
-import Button from './Button.tsx';
-import { PRESET_COLORS } from '../constants.tsx';
+import { Label } from '../types';
+import Button from './Button';
+import { PRESET_COLORS } from '../constants';
 
 interface LabelManagerProps {
   labels: Label[];
