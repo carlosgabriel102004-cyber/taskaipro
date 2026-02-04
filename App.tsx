@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Task, Label, TimeRange, Priority, ViewType } from './types';
 import { INITIAL_LABELS, INITIAL_TASKS } from './constants';
@@ -21,16 +20,16 @@ interface NavItemProps {
 const NavItem: React.FC<NavItemProps> = ({ active, onClick, icon, label, count, colorClass }) => (
   <button 
     onClick={onClick} 
-    className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold transition-all duration-300 ${
+    className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl text-[13px] font-bold transition-all duration-300 ${
       active 
-        ? `${colorClass} text-white shadow-xl translate-x-2` 
-        : 'text-slate-400 hover:bg-white hover:text-slate-600 hover:shadow-sm'
+        ? `${colorClass} text-white shadow-lg translate-x-1` 
+        : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
     }`}
   >
-    <span className="flex-shrink-0 scale-110">{icon}</span>
+    <span className={`flex-shrink-0 transition-transform ${active ? 'scale-110' : ''}`}>{icon}</span>
     <span className="flex-grow text-left">{label}</span>
     {count !== undefined && count > 0 && (
-      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${active ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-400'}`}>
+      <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black tracking-tight ${active ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-400'}`}>
         {count}
       </span>
     )}
@@ -40,14 +39,14 @@ const NavItem: React.FC<NavItemProps> = ({ active, onClick, icon, label, count, 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>(() => {
     try {
-      const saved = localStorage.getItem('taskpro_v4');
+      const saved = localStorage.getItem('taskpro_v5');
       return saved ? JSON.parse(saved) : INITIAL_TASKS;
     } catch (e) { return INITIAL_TASKS; }
   });
   
   const [labels, setLabels] = useState<Label[]>(() => {
     try {
-      const saved = localStorage.getItem('labels_v4');
+      const saved = localStorage.getItem('labels_v5');
       return saved ? JSON.parse(saved) : INITIAL_LABELS;
     } catch (e) { return INITIAL_LABELS; }
   });
@@ -59,14 +58,14 @@ const App: React.FC = () => {
   const [isLabelManagerOpen, setIsLabelManagerOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-  useEffect(() => { localStorage.setItem('taskpro_v4', JSON.stringify(tasks)); }, [tasks]);
-  useEffect(() => { localStorage.setItem('labels_v4', JSON.stringify(labels)); }, [labels]);
+  useEffect(() => { localStorage.setItem('taskpro_v5', JSON.stringify(tasks)); }, [tasks]);
+  useEffect(() => { localStorage.setItem('labels_v5', JSON.stringify(labels)); }, [labels]);
 
   const stats = useMemo(() => ({
     past: tasks.filter(t => isPast(t.dueDate) && !t.completed).length,
     today: tasks.filter(t => isToday(t.dueDate) && !t.completed).length,
     tomorrow: tasks.filter(t => isTomorrow(t.dueDate) && !t.completed).length,
-    total: tasks.length
+    total: tasks.filter(t => !t.completed).length
   }), [tasks]);
 
   const filteredTasks = useMemo(() => {
@@ -89,11 +88,6 @@ const App: React.FC = () => {
     return `${month.charAt(0).toUpperCase() + month.slice(1)} de ${calendarDate.getFullYear()}`;
   }, [calendarDate]);
 
-  const changeMonth = (offset: number) => {
-    const newDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth() + offset, 1);
-    setCalendarDate(newDate);
-  };
-
   const handleSaveTask = (taskData: Partial<Task>) => {
     if (editingTask) {
       setTasks(prev => prev.map(t => t.id === editingTask.id ? { ...t, ...taskData } as Task : t));
@@ -114,182 +108,135 @@ const App: React.FC = () => {
     setEditingTask(null);
   };
 
-  const handleUpdateTask = (id: string, updates: Partial<Task>) => {
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
-  };
-
-  const renderMainContent = () => {
-    if (currentView === 'calendar') {
-      return (
-        <CalendarView 
-          tasks={tasks} 
-          labels={labels} 
-          currentDate={calendarDate} 
-          onSelectDate={(d) => { /* Opcional: abrir modal com data d */ }} 
-          onEditTask={(t) => { setEditingTask(t); setIsTaskModalOpen(true); }} 
-        />
-      );
-    }
-
-    if (currentView === 'notes') {
-      return <NotesView tasks={tasks} onUpdateTask={handleUpdateTask} />;
-    }
-
-    return (
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        {filteredTasks.map(task => (
-          <TaskItem 
-            key={task.id} 
-            task={task} 
-            labels={labels} 
-            onToggle={(id) => setTasks(prev => prev.map(t => t.id === id ? {...t, completed: !t.completed} : t))} 
-            onDelete={(id) => setTasks(prev => prev.filter(t => t.id !== id))} 
-            onEdit={(t) => { setEditingTask(t); setIsTaskModalOpen(true); }} 
-          />
-        ))}
-        {filteredTasks.length === 0 && (
-          <div className="col-span-full py-32 flex flex-col items-center justify-center text-slate-200">
-            <div className="w-32 h-32 bg-white rounded-[48px] flex items-center justify-center mb-8 shadow-sm">
-              <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-            <p className="text-2xl font-black text-slate-300">Tudo em ordem por aqui!</p>
-            <p className="font-bold opacity-60">Sua lista está limpa e organizada.</p>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="flex h-screen bg-[#F8F9FD] overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-80 bg-white border-r border-slate-100 p-8 flex flex-col gap-10">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-indigo-600 rounded-[20px] flex items-center justify-center text-white shadow-xl shadow-indigo-100">
-            <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M5 13l4 4L19 7"/></svg>
+      <aside className="w-72 bg-white border-r border-slate-100 p-6 flex flex-col gap-8">
+        <div className="flex items-center gap-3 px-2">
+          <div className="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-100">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M5 13l4 4L19 7"/></svg>
           </div>
           <div>
-            <h1 className="text-xl font-black text-slate-800 tracking-tight leading-none">TaskPro <span className="text-indigo-600">AI</span></h1>
-            <p className="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest mt-1">Status: Online</p>
+            <h1 className="text-lg font-black text-slate-800 tracking-tight">TaskPro AI</h1>
+            <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Premium Organizer</p>
           </div>
         </div>
 
-        <nav className="flex flex-col gap-3">
-          <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest px-5 mb-1">Meu Cronograma</p>
+        <nav className="flex flex-col gap-1.5">
+          <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.15em] px-4 mb-2 mt-4">Cronograma</p>
           <NavItem 
             active={currentView === 'list' && activeRange === 'past'} 
             onClick={() => { setActiveRange('past'); setCurrentView('list'); }} 
             label="Dias Passados" 
             count={stats.past}
-            colorClass="bg-rose-500 shadow-rose-100"
+            colorClass="bg-rose-500"
             icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeWidth={2}/></svg>}
           />
           <NavItem 
             active={currentView === 'list' && activeRange === 'today'} 
             onClick={() => { setActiveRange('today'); setCurrentView('list'); }} 
-            label="Foco de Hoje" 
+            label="Hoje" 
             count={stats.today}
-            colorClass="bg-indigo-600 shadow-indigo-100"
+            colorClass="bg-indigo-600"
             icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" strokeWidth={2}/></svg>}
           />
           <NavItem 
             active={currentView === 'list' && activeRange === 'tomorrow'} 
             onClick={() => { setActiveRange('tomorrow'); setCurrentView('list'); }} 
-            label="Para Amanhã" 
+            label="Amanhã" 
             count={stats.tomorrow}
-            colorClass="bg-emerald-500 shadow-emerald-100"
+            colorClass="bg-emerald-500"
             icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M13 5l7 7-7 7M5 5l7 7-7 7" strokeWidth={2}/></svg>}
           />
           
-          <div className="my-6 border-t border-slate-50" />
-          
-          <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest px-5 mb-1">Visões</p>
+          <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.15em] px-4 mb-2 mt-8">Visões</p>
           <NavItem 
             active={currentView === 'calendar'} 
             onClick={() => setCurrentView('calendar')} 
             label="Calendário" 
-            colorClass="bg-slate-800 shadow-slate-200"
-            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9" strokeWidth={2}/></svg>}
+            colorClass="bg-slate-800"
+            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" strokeWidth={2}/></svg>}
           />
           <NavItem 
             active={currentView === 'notes'} 
             onClick={() => setCurrentView('notes')} 
-            label="Notas" 
-            count={stats.total}
-            colorClass="bg-amber-500 shadow-amber-100"
-            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" strokeWidth={2}/></svg>}
+            label="Minhas Notas" 
+            colorClass="bg-amber-500"
+            icon={<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9" strokeWidth={2}/></svg>}
           />
         </nav>
 
-        <div className="mt-auto">
+        <div className="mt-auto border-t border-slate-50 pt-6">
           <button 
             onClick={() => setIsLabelManagerOpen(true)}
-            className="w-full py-4 border-2 border-dashed border-slate-100 rounded-2xl text-slate-300 font-bold text-xs hover:border-indigo-200 hover:text-indigo-400 transition-all uppercase tracking-widest"
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-slate-50 text-slate-500 rounded-xl font-bold text-xs hover:bg-slate-100 transition-colors uppercase tracking-wider"
           >
-            Editar Etiquetas
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M7 7h10M7 12h10m-10 5h10" strokeWidth={2} /></svg>
+            Etiquetas
           </button>
         </div>
       </aside>
 
-      {/* Conteúdo Principal */}
+      {/* Main Content */}
       <main className="flex-grow flex flex-col overflow-hidden">
-        <header className="px-12 py-10 flex items-center justify-between bg-[#F8F9FD]/80 backdrop-blur-md sticky top-0 z-10">
-          <div className="flex items-center gap-6">
-            <div>
-              <h2 className="text-4xl font-black text-slate-800 tracking-tight">
-                {currentView === 'calendar' ? calendarTitle : 
-                 currentView === 'notes' ? 'Minhas Notas' :
-                 activeRange === 'today' ? 'Foco de Hoje' : 
-                 activeRange === 'tomorrow' ? 'Plano Amanhã' : 'Dias Passados'}
-              </h2>
-              <p className="text-slate-400 font-bold mt-1">
-                {currentView === 'calendar' ? 'Visão geral do mês' : 
-                 currentView === 'notes' ? 'Detalhes e anotações longas' :
-                 `Você tem ${filteredTasks.length} tarefas nesta categoria.`}
-              </p>
-            </div>
-            
-            {currentView === 'calendar' && (
-              <div className="flex bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <button 
-                  onClick={() => changeMonth(-1)}
-                  className="p-3 hover:bg-slate-50 text-slate-400 hover:text-indigo-600 transition-colors border-r border-slate-50"
-                  title="Mês Anterior"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M15 19l-7-7 7-7"/></svg>
-                </button>
-                <button 
-                  onClick={() => setCalendarDate(new Date())}
-                  className="px-4 py-2 text-[10px] font-black text-slate-400 hover:text-indigo-600 uppercase tracking-widest hover:bg-slate-50 transition-colors border-r border-slate-50"
-                >
-                  Hoje
-                </button>
-                <button 
-                  onClick={() => changeMonth(1)}
-                  className="p-3 hover:bg-slate-50 text-slate-400 hover:text-indigo-600 transition-colors"
-                  title="Próximo Mês"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M9 5l7 7-7 7"/></svg>
-                </button>
-              </div>
-            )}
+        <header className="px-10 py-8 flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-black text-slate-900 tracking-tight">
+              {currentView === 'calendar' ? calendarTitle : 
+               currentView === 'notes' ? 'Notas Detalhadas' :
+               activeRange === 'today' ? 'Foco de Hoje' : 
+               activeRange === 'tomorrow' ? 'Plano Amanhã' : 'Pendências do Passado'}
+            </h2>
+            <p className="text-slate-400 font-bold text-sm mt-0.5">
+              {currentView === 'calendar' ? 'Planejamento mensal' : 
+               currentView === 'notes' ? 'Espaço para anotações longas' :
+               `Você tem ${filteredTasks.length} tarefas nesta categoria.`}
+            </p>
           </div>
           
           <button 
             onClick={() => setIsTaskModalOpen(true)}
-            className="bg-indigo-600 text-white px-10 py-5 rounded-[24px] font-black text-sm shadow-2xl shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition-all flex items-center gap-3 active:scale-95"
+            className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black text-xs shadow-xl shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all flex items-center gap-2 active:scale-95 uppercase tracking-widest"
           >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M12 5v14M5 12h14"/></svg>
-            CRIAR AGORA
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path d="M12 5v14M5 12h14"/></svg>
+            Nova Tarefa
           </button>
         </header>
 
-        <section className="flex-grow overflow-y-auto px-12 pb-20 custom-scrollbar">
-          {renderMainContent()}
+        <section className="flex-grow overflow-y-auto px-10 pb-10 custom-scrollbar">
+          {currentView === 'calendar' ? (
+            <CalendarView 
+              tasks={tasks} labels={labels} currentDate={calendarDate} 
+              onSelectDate={() => {}} 
+              onEditTask={(t) => { setEditingTask(t); setIsTaskModalOpen(true); }} 
+            />
+          ) : currentView === 'notes' ? (
+            <NotesView tasks={tasks} onUpdateTask={(id, up) => setTasks(prev => prev.map(t => t.id === id ? {...t, ...up} : t))} />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              {filteredTasks.map(task => (
+                <TaskItem 
+                  key={task.id} task={task} labels={labels} 
+                  onToggle={(id) => setTasks(prev => prev.map(t => t.id === id ? {...t, completed: !t.completed} : t))} 
+                  onDelete={(id) => setTasks(prev => prev.filter(t => t.id !== id))} 
+                  onEdit={(t) => { setEditingTask(t); setIsTaskModalOpen(true); }} 
+                />
+              ))}
+              {filteredTasks.length === 0 && (
+                <div className="col-span-full py-24 flex flex-col items-center justify-center text-slate-300">
+                  <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-50">
+                    <svg className="w-10 h-10 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" strokeWidth={1.5}/></svg>
+                  </div>
+                  <p className="text-xl font-bold">Nenhuma tarefa aqui</p>
+                  <p className="text-sm font-medium opacity-60">Sua lista está limpa e organizada.</p>
+                </div>
+              )}
+            </div>
+          )}
         </section>
       </main>
 
-      {/* Modais */}
+      {/* Modals */}
       {isTaskModalOpen && <TaskModal task={editingTask} labels={labels} onSave={handleSaveTask} onClose={() => {setIsTaskModalOpen(false); setEditingTask(null);}} />}
       {isLabelManagerOpen && <LabelManager labels={labels} onAdd={(n, c) => setLabels([...labels, {id: Date.now().toString(), name: n, color: c}])} onDelete={(id) => setLabels(labels.filter(l => l.id !== id))} onClose={() => setIsLabelManagerOpen(false)} />}
     </div>
